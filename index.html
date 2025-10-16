@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mixed Game Poker Tournament Clock</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background: linear-gradient(to bottom right, #111, #222);
+    color: #eee;
+  }
+  h1 { margin: 10px 0; font-size: 2rem; }
+  #fullscreenBtn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: #333;
+    color: #eee;
+    border-radius: 6px;
+    border: none;
+  }
+  #main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 20px 0;
+    gap: 50px;
+  }
+  .control-box {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  #clockSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #clock {
+    font-size: 10rem;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    color: #0f0;
+    transition: color 0.3s ease;
+  }
+  .red { color: #f00 !important; }
+  .blink { animation: blink 1s steps(2, start) infinite; }
+  @keyframes blink { to { visibility: hidden; } }
+  #game, #players { font-size: 1.25rem; margin: 5px 0; }
+  button {
+    font-size: 0.9rem;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #333;
+    color: #eee;
+  }
+  button:hover { background: #555; }
+  .small-button { font-size: 0.9rem; padding: 4px 8px; }
+  .danger { background: #a00; color: #fff; }
+  .danger:hover { background: #c00; }
+  input[type="text"] {
+    font-size: 1rem;
+    padding: 4px 8px;
+    width: 80px;
+    border-radius: 6px;
+    border: 1px solid #555;
+    background: #222;
+    color: #eee;
+    text-align: center;
+  }
+  .button-row { display: flex; gap: 10px; justify-content: center; }
+  #levelsOverview { display: flex; gap: 15px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .level-card { background: #222; padding: 10px 15px; border-radius: 10px; min-width: 150px; }
+  .level-card h3 { margin: 5px 0; font-size: 1rem; text-transform: capitalize; }
+  .level-info { font-size: 0.9rem; margin-top: 5px; text-align: center; }
+</style>
+</head>
+<body>
+<h1>Mixed Game Tournament Clock</h1>
+<button id="fullscreenBtn" onclick="toggleFullscreen()">Fullscreen</button>
+
+<div id="main">
+  <!-- Left controls -->
+  <div class="control-box" id="leftControls">
+    <button onclick="togglePause()">Pause / Resume</button>
+
+    <div class="button-row">
+      <button class="small-button" onclick="prevLevel()">- Level</button>
+      <button class="small-button" onclick="nextLevel()">+ Level</button>
+    </div>
+
+    <div class="button-row">
+      <button class="small-button" onclick="adjustClock(-60)">-1 min</button>
+      <button class="small-button" onclick="adjustClock(60)">+1 min</button>
+    </div>
+
+    <div class="button-row">
+      <input type="text" id="manualClock" placeholder="mm:ss">
+      <button class="small-button" onclick="setClockManual()">Set</button>
+    </div>
+  </div>
+
+  <!-- Center section -->
+  <div id="clockSection">
+    <div id="clock">00:00</div>
+    <div id="game">Level: </div>
+  </div>
+
+  <!-- Right controls -->
+  <div class="control-box" id="rightControls">
+    <div id="players">Players: 0 / 0</div>
+    <div class="button-row">
+      <button onclick="addBuyin()" id="buyin-btn" class="small-button">+ Buy-in</button>
+      <button onclick="addRebuy()" id="rebuy-btn" class="small-button">+ Rebuy</button>
+    </div>
+    <div class="button-row">
+      <button onclick="removePlayer()" class="small-button">- Player</button>
+      <button id="resetBtn" class="danger" onclick="resetTournament()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<div id="levelsOverview"></div>
+
+<script>
+/* --- Configuration --- */
+const config = {
+  level_length: 1200,
+  break_length: 600,
+  levels: [
+    {
+      id:1, 
+      nlh:{small:25,big:50,bb_ante:50}, 
+      plo:{small:25,big:50,bb_ante:100}, 
+      limit_stud:{ante:25,bring_in:25,small_bet:100,big_bet:200}, 
+      limit_blinds:{small:50,big:100,small_bet:100,big_bet:200}, 
+      break:false
+    },
+    {
+      id:2, 
+      nlh:{small:50,big:100,bb_ante:100}, 
+      plo:{small:50,big:100,bb_ante:150}, 
+      limit_stud:{ante:50,bring_in:50,small_bet:150,big_bet:300}, 
+      limit_blinds:{small:75,big:150,small_bet:150,big_bet:300}, 
+      break:false
+    },
+    {
+      id:3, 
+      nlh:{small:100,big:200,bb_ante:200}, 
+      plo:{small:100,big:200,bb_ante:300}, 
+      limit_stud:{ante:100,bring_in:100,small_bet:200,big_bet:400}, 
+      limit_blinds:{small:100,big:200,small_bet:200,big_bet:400}, 
+      break:true
+    },
+    {
+      id:4, 
+      nlh:{small:200,big:400,bb_ante:400}, 
+      plo:{small:200,big:400,bb_ante:600}, 
+      limit_stud:{ante:100,bring_in:100,small_bet:300,big_bet:600}, 
+      limit_blinds:{small:150,big:300,small_bet:300,big_bet:600}, 
+      break:false
+    }
+    // Add remaining levels here, break:false for now
+  ]
+};
+
+const formatHeader = {
+  nlh:"No Limit Holdem", 
+  plo:"Pot Limit Omaha", 
+  limit_stud:"Limit Stud", 
+  limit_blinds:"Limit Blinds"
+};
+
+let tournament = {
+  level:0,
+  onBreak:false,
+  timeLeft: config.level_length,
+  paused:true,
+  totalPlayers:0,
+  totalBuyins:0,
+  totalRebuys:0,
+  totalChips:0,
+  averageStack:0
+};
+
+/* --- LocalStorage --- */
+function saveTournament(){ localStorage.setItem("tournamentState", JSON.stringify(tournament)); }
+function loadTournament(){ 
+  const saved = localStorage.getItem("tournamentState"); 
+  if(saved){ Object.assign(tournament, JSON.parse(saved)); }
+}
+function saveStructures(){ localStorage.setItem("tournamentStructures", JSON.stringify(config.levels)); }
+function loadStructures(){ 
+  const saved = localStorage.getItem("tournamentStructures"); 
+  if(saved){ config.levels = JSON.parse(saved); }
+}
+
+/* --- Clock and display --- */
+function updateDisplay(){
+  const clock = document.getElementById("clock");
+  clock.classList.remove("red","blink");
+  const lvl = config.levels[tournament.level];
+  
+  // Clock display
+  const lastLevelFinished = tournament.level===config.levels.length-1 && tournament.timeLeft===0 && !tournament.onBreak;
+  const minutes = Math.floor(tournament.timeLeft/60).toString().padStart(2,"0");
+  const seconds = (tournament.timeLeft%60).toString().padStart(2,"0");
+  clock.textContent = `${minutes}:${seconds}`;
+  
+  if(!lastLevelFinished){
+    clock.style.color="#0f0";
+    if(tournament.timeLeft<=60) clock.classList.add("red");
+    if(tournament.timeLeft<=10) clock.classList.add("blink");
+  } else {
+    clock.style.color="#eee";
+  }
+
+  document.getElementById("game").textContent = lvl.break && tournament.onBreak ? "Break" : `Level: ${lvl.id}`;
+  document.getElementById("players").innerHTML = 
+    `Players: ${tournament.totalPlayers} / ${tournament.totalBuyins} <br>
+     Rebuys: ${tournament.totalRebuys} <br>
+     Total Chips: ${tournament.totalChips} <br>
+     Avg Stack: ${tournament.averageStack}`;
+
+  // Current level blind cards
+  const levelsDiv = document.getElementById("levelsOverview");
+  levelsDiv.innerHTML = "";
+  ["nlh","plo","limit_stud","limit_blinds"].forEach(game=>{
+    const card = document.createElement("div");
+    card.className="level-card";
+    card.innerHTML = `<h3>${formatHeader[game]}</h3><div class="level-info">${formatBlinds(lvl[game],game)}</div>`;
+    levelsDiv.appendChild(card);
+  });
+}
+
+function formatBlinds(structure,game){
+  if(!structure) return "N/A";
+  if(game==="limit_stud") return `Ante: ${structure.ante}<br>Bring-In: ${structure.bring_in}<br>Small Bet: ${structure.small_bet}<br>Big Bet: ${structure.big_bet}`;
+  if(game==="limit_blinds") return `Small: ${structure.small}<br>Big: ${structure.big}<br>Small Bet: ${structure.small_bet}<br>Big Bet: ${structure.big_bet}`;
+  return `Small: ${structure.small}<br>Big: ${structure.big}<br>BB Ante: ${structure.bb_ante}`;
+}
+
+/* --- Tick --- */
+function tick(){
+  if(!tournament.paused && tournament.timeLeft>0){
+    tournament.timeLeft--;
+    if(tournament.timeLeft<=0) nextLevel();
+    saveTournament();
+    updateDisplay();
+  }
+}
+setInterval(tick,1000);
+
+/* --- Controls --- */
+function togglePause(){ tournament.paused=!tournament.paused; saveTournament(); updateDisplay(); }
+function nextLevel() {
+  const lvl = config.levels[tournament.level];
+  if (!tournament.onBreak && lvl.break) {
+    // Enter break of current level
+    tournament.onBreak = true;
+    tournament.timeLeft = config.break_length;
+  } else {
+    // Move to next level
+    if (tournament.level >= config.levels.length - 1) {
+      tournament.timeLeft = 0;
+      tournament.onBreak = false;
+      updateDisplay();
+      return;
+    }
+    tournament.level++;
+    tournament.onBreak = false;
+    tournament.timeLeft = config.level_length;
+  }
+  saveTournament();
+  updateDisplay();
+}
+
+function prevLevel() {
+  if (tournament.onBreak) {
+    // Exit break and go back to start of current level
+    tournament.onBreak = false;
+    tournament.timeLeft = config.level_length;
+  } else {
+    // Move to previous level
+    if (tournament.level <= 0) return;
+    tournament.level--;
+    const prevLvl = config.levels[tournament.level];
+    tournament.onBreak = prevLvl.break;
+    tournament.timeLeft = prevLvl.break ? config.break_length : config.level_length;
+  }
+  saveTournament();
+  updateDisplay();
+}
+function adjustClock(s){ tournament.timeLeft=Math.max(0,tournament.timeLeft+s); saveTournament(); updateDisplay(); }
+function setClockManual(){
+  const val=document.getElementById("manualClock").value.trim();
+  const parts=val.split(":");
+  if(parts.length!==2) return alert("Invalid format. Use mm:ss");
+  const mins=parseInt(parts[0],10), secs=parseInt(parts[1],10);
+  if(isNaN(mins)||isNaN(secs)) return alert("Invalid numbers");
+  tournament.timeLeft=mins*60+secs;
+  saveTournament();
+  updateDisplay();
+}
+function resetTournament(){
+  if(confirm("Reset tournament?")){
+    tournament={level:0,onBreak:false,timeLeft:config.level_length,paused:true,totalPlayers:0,totalBuyins:0,totalRebuys:0,totalChips:0,averageStack:0};
+    saveTournament();
+    updateDisplay();
+  }
+}
+function addBuyin(){ tournament.totalPlayers++; tournament.totalBuyins++; tournament.totalChips+=12000; updateAverageStack(); saveTournament(); updateDisplay(); }
+function addRebuy(){ tournament.totalRebuys++; tournament.totalBuyins++; tournament.totalChips+=12000; updateAverageStack(); saveTournament(); updateDisplay(); }
+function removePlayer(){ if(tournament.totalPlayers>0){ tournament.totalPlayers--; updateAverageStack(); saveTournament(); updateDisplay(); } }
+function updateAverageStack(){ tournament.averageStack = tournament.totalPlayers ? Math.floor(tournament.totalChips/tournament.totalPlayers) : 0; }
+
+/* --- Fullscreen --- */
+function toggleFullscreen(){
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else if(document.exitFullscreen) document.exitFullscreen();
+}
+
+/* --- Keyboard shortcuts --- */
+document.addEventListener("keydown", e=>{
+  if(e.code==="Space"){ e.preventDefault(); togglePause(); }
+  if(e.key.toLowerCase()==='q') prevLevel();
+  if(e.key.toLowerCase()==='w') nextLevel();
+});
+
+window.onload = function(){
+  loadStructures();
+  loadTournament();
+  updateDisplay();
+};
+</script>
+</body>
+</html>
