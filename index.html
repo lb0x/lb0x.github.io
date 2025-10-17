@@ -428,19 +428,34 @@ document.addEventListener("keydown", e=>{
   if(e.key.toLowerCase()==='w') nextLevel();
 });
 
+let wakeLock = null;
+
+async function keepAwake() {
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    console.log('Wake lock active');
+
+    wakeLock.addEventListener('release', () => {
+      console.log('Wake lock released');
+    });
+
+    // Re-request if the tab visibility changes
+    document.addEventListener('visibilitychange', async () => {
+      if (wakeLock !== null && document.visibilityState === 'visible') {
+        wakeLock = await navigator.wakeLock.request('screen');
+      }
+    });
+  } catch (err) {
+    console.error('Wake lock failed:', err);
+  }
+}
+
 window.onload = function(){
   loadStructures();
   loadTournament();
   updateDisplay();
-  const video = document.createElement('video');
-  video.src = 'data:video/mp4;base64,AAAAHGZ0eXBtcDQyAAAAAG1wNDFtcDQyaXNvbQ==';
-  video.loop = true;
-  video.muted = true;
-  video.playsInline = true;
-  video.style.display = 'none';
-  document.body.appendChild(video);
-  video.play().catch(() => {});
 };
+keepAwake();
 </script>
 </body>
 </html>
