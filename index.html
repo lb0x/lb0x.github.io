@@ -12,6 +12,33 @@
     background: linear-gradient(to bottom right, #111, #222);
     color: #eee;
   }
+  body.theme-red {
+  background: linear-gradient(135deg, #1a0000, #330000, #660000);
+}
+  body.theme-blue {
+  background: linear-gradient(135deg, #001a33, #003366, #006699);
+}
+
+body.theme-green {
+  background: linear-gradient(135deg, #002d00, #004d00, #007a00);
+}
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+  .top-buttons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.top-buttons button {
+  margin-left: 5px;
+}
+  
   h1 { margin: 10px 0; font-size: 2rem; }
   #fullscreenBtn {
     position: fixed;
@@ -90,8 +117,10 @@
 </head>
 <body>
 <h1>Mixed Game Tournament Clock</h1>
-<button id="fullscreenBtn" onclick="toggleFullscreen()">Fullscreen</button>
-
+  <div class="top-buttons">
+    <button onclick="switchTheme()">Theme</button>
+    <button id="fullscreenBtn" onclick="toggleFullscreen()">Fullscreen</button>
+  </div>
 <div id="main">
   <!-- Left controls -->
   <div class="control-box" id="leftControls">
@@ -419,6 +448,30 @@ function updateAverageStack(){ tournament.averageStack = tournament.totalPlayers
 function toggleFullscreen(){
   if(!document.fullscreenElement) document.documentElement.requestFullscreen();
   else if(document.exitFullscreen) document.exitFullscreen();
+}
+
+  // === THEME SWITCHER ===
+const themes = ["theme-red", "theme-blue", "theme-green"];
+let currentThemeIndex = 0;
+
+// Load saved theme if exists
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme && themes.includes(savedTheme)) {
+  document.body.classList.add(savedTheme);
+  currentThemeIndex = themes.indexOf(savedTheme);
+} else {
+  document.body.classList.add(themes[0]);
+}
+
+function switchTheme() {
+  // Remove current theme
+  document.body.classList.remove(themes[currentThemeIndex]);
+  // Cycle to next
+  currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+  // Add next theme
+  document.body.classList.add(themes[currentThemeIndex]);
+  // Save preference
+  localStorage.setItem("theme", themes[currentThemeIndex]);
 }
 
 /* --- Keyboard shortcuts --- */
