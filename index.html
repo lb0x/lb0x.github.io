@@ -68,6 +68,18 @@ body.theme-blue {
 body.theme-green {
   background: linear-gradient(to bottom right, #002200, #004400);
 }
+
+  body.theme-purple {
+  background: linear-gradient(180deg, #32004b, #6b00b3);
+}
+
+body.theme-gold {
+  background: linear-gradient(180deg, #b8860b, #ffcc33);
+}
+
+body.theme-grey {
+  background: linear-gradient(180deg, #444, #777);
+}
   
   h1 { margin: 10px 0; font-size: 2rem; }
   #fullscreenBtn {
@@ -503,7 +515,14 @@ function toggleFullscreen(){
 }
 
  /* --- Theme Switcher --- */
-const themes = ["theme-dark", "theme-red", "theme-blue", "theme-green"];
+const themes = [
+  "theme-dark",
+  "theme-red",
+  "theme-blue",
+  "theme-purple",
+  "theme-gold",
+  "theme-grey"
+];
 let currentThemeIndex = 0;
 
 // Load saved theme on startup
