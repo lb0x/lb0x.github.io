@@ -159,18 +159,106 @@ const config = {
     },
     {
       id:3, 
-      nlh:{small:100,big:200,bb_ante:200}, 
-      plo:{small:100,big:200,bb_ante:300}, 
+      nlh:{small:50,big:100,bb_ante:100}, 
+      plo:{small:50,big:100,bb_ante:150}, 
       limit_stud:{ante:100,bring_in:100,small_bet:200,big_bet:400}, 
       limit_blinds:{small:100,big:200,small_bet:200,big_bet:400}, 
-      break:true
+      break:false
     },
     {
       id:4, 
-      nlh:{small:200,big:400,bb_ante:400}, 
-      plo:{small:200,big:400,bb_ante:600}, 
+      nlh:{small:100,big:200,bb_ante:200}, 
+      plo:{small:100,big:200,bb_ante:300}, 
       limit_stud:{ante:100,bring_in:100,small_bet:300,big_bet:600}, 
       limit_blinds:{small:150,big:300,small_bet:300,big_bet:600}, 
+      break:true
+    },
+    {
+      id:5, 
+      nlh:{small:100,big:200,bb_ante:200}, 
+      plo:{small:100,big:200,bb_ante:300}, 
+      limit_stud:{ante:100,bring_in:100,small_bet:400,big_bet:800}, 
+      limit_blinds:{small:200,big:400,small_bet:400,big_bet:800}, 
+      break:false
+    },
+    {
+      id:6, 
+      nlh:{small:200,big:300,bb_ante:300}, 
+      plo:{small:200,big:300,bb_ante:500}, 
+      limit_stud:{ante:100,bring_in:200,small_bet:600,big_bet:1200}, 
+      limit_blinds:{small:300,big:600,small_bet:600,big_bet:1200}, 
+      break:false
+    },
+    {
+      id:7, 
+      nlh:{small:200,big:400,bb_ante:400}, 
+      plo:{small:200,big:400,bb_ante:600}, 
+      limit_stud:{ante:200,bring_in:200,small_bet:800,big_bet:1600}, 
+      limit_blinds:{small:400,big:800,small_bet:800,big_bet:1600}, 
+      break:false
+    },
+    {
+      id:8, 
+      nlh:{small:300,big:500,bb_ante:500}, 
+      plo:{small:300,big:500,bb_ante:800}, 
+      limit_stud:{ante:200,bring_in:300,small_bet:1000,big_bet:2000}, 
+      limit_blinds:{small:500,big:1000,small_bet:1000,big_bet:2000}, 
+      break:true
+    },
+    {
+      id:9, 
+      nlh:{small:300,big:600,bb_ante:600}, 
+      plo:{small:300,big:600,bb_ante:900}, 
+      limit_stud:{ante:300,bring_in:300,small_bet:1200,big_bet:2400}, 
+      limit_blinds:{small:600,big:1200,small_bet:1200,big_bet:2400}, 
+      break:false
+    },
+    {
+      id:10, 
+      nlh:{small:400,big:800,bb_ante:800}, 
+      plo:{small:400,big:800,bb_ante:1200}, 
+      limit_stud:{ante:300,bring_in:500,small_bet:1500,big_bet:3000}, 
+      limit_blinds:{small:800,big:1500,small_bet:1500,big_bet:3000}, 
+      break:false
+    },
+    {
+      id:11, 
+      nlh:{small:500,big:1000,bb_ante:1000}, 
+      plo:{small:500,big:1000,bb_ante:1500}, 
+      limit_stud:{ante:500,bring_in:500,small_bet:2000,big_bet:4000}, 
+      limit_blinds:{small:1000,big:2000,small_bet:2000,big_bet:4000}, 
+      break:false
+    },
+    {
+      id:12, 
+      nlh:{small:600,big:1200,bb_ante:1200}, 
+      plo:{small:600,big:1200,bb_ante:1800}, 
+      limit_stud:{ante:500,bring_in:700,small_bet:2400,big_bet:4800}, 
+      limit_blinds:{small:1300,big:2500,small_bet:2500,big_bet:5000}, 
+      break:true
+    },
+    {
+      id:13, 
+      nlh:{small:800,big:1600,bb_ante:1600}, 
+      plo:{small:800,big:1600,bb_ante:2400}, 
+      limit_stud:{ante:700,bring_in:1000,small_bet:3000,big_bet:6000}, 
+      limit_blinds:{small:1500,big:3000,small_bet:3000,big_bet:6000}, 
+      break:false
+    },
+    {
+      id:14, 
+      nlh:{small:1000,big:2000,bb_ante:2000}, 
+      plo:{small:1000,big:2000,bb_ante:3000}, 
+      limit_stud:{ante:1000,bring_in:1000,small_bet:4000,big_bet:8000}, 
+      limit_blinds:{small:2000,big:4000,small_bet:4000,big_bet:8000}, 
+      break:false
+    },
+    {
+      id:15, 
+      nlh:{small:1200,big:2400,bb_ante:2400}, 
+      plo:{small:1200,big:2400,bb_ante:3600}, 
+      limit_stud:{ante:1000,bring_in:2000,small_bet:5000,big_bet:10000}, 
+      limit_blinds:{small:2500,big:5000,small_bet:5000,big_bet:10000}, 
       break:false
     }
     // Add remaining levels here, break:false for now
@@ -348,3 +436,4 @@ window.onload = function(){
 </script>
 </body>
 </html>
+
