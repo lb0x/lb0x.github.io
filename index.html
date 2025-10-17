@@ -432,20 +432,6 @@ window.onload = function(){
   loadStructures();
   loadTournament();
   updateDisplay();
-(async () => {
-    try {
-      let lock = await navigator.wakeLock?.request('screen');
-      document.addEventListener('visibilitychange', async () => {
-        if (document.visibilityState === 'visible') {
-          lock = await navigator.wakeLock?.request('screen');
-        }
-      });
-      console.log('Screen Wake Lock active');
-    } catch (err) {
-      console.error('Wake Lock failed:', err);
-    }
-  })();
-};
 };
 </script>
 </body>
