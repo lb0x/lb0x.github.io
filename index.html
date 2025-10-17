@@ -432,6 +432,14 @@ window.onload = function(){
   loadStructures();
   loadTournament();
   updateDisplay();
+  const video = document.createElement('video');
+  video.src = 'data:video/mp4;base64,AAAAHGZ0eXBtcDQyAAAAAG1wNDFtcDQyaXNvbQ==';
+  video.loop = true;
+  video.muted = true;
+  video.playsInline = true;
+  video.style.display = 'none';
+  document.body.appendChild(video);
+  video.play().catch(() => {});
 };
 </script>
 </body>
