@@ -12,16 +12,7 @@
     background: linear-gradient(to bottom right, #111, #222);
     color: #eee;
   }
-  body.theme-red {
-  background: linear-gradient(135deg, #1a0000, #330000, #660000);
-}
-  body.theme-blue {
-  background: linear-gradient(135deg, #001a33, #003366, #006699);
-}
-
-body.theme-green {
-  background: linear-gradient(135deg, #002d00, #004d00, #007a00);
-}
+ 
 .container {
   display: flex;
   justify-content: space-between;
@@ -36,21 +27,46 @@ body.theme-green {
   display: flex;
   gap: 10px;
 }
+.top-buttons {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+}
 
 .top-buttons button {
-  background: rgba(40, 40, 40, 0.85);
-  color: #fff;
-  border: 1px solid #666;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 14px;
+  background: #333;
+  color: #eee;
+  border-radius: 6px;
+  border: 1px solid #555;
+  padding: 6px 14px;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: background 0.3s, transform 0.2s;
 }
 
 .top-buttons button:hover {
-  background: rgba(70, 70, 70, 0.95);
+  background: #555;
   transform: scale(1.05);
+}
+
+/* Theme background styles */
+body.theme-dark {
+  background: linear-gradient(to bottom right, #111, #222);
+}
+
+body.theme-red {
+  background: linear-gradient(to bottom right, #330000, #660000);
+}
+
+body.theme-blue {
+  background: linear-gradient(to bottom right, #001133, #003366);
+}
+
+body.theme-green {
+  background: linear-gradient(to bottom right, #002200, #004400);
 }
   
   h1 { margin: 10px 0; font-size: 2rem; }
@@ -464,12 +480,12 @@ function toggleFullscreen(){
   else if(document.exitFullscreen) document.exitFullscreen();
 }
 
-  // === THEME SWITCHER ===
-const themes = ["theme-red", "theme-blue", "theme-green"];
+ /* --- Theme Switcher --- */
+const themes = ["theme-dark", "theme-red", "theme-blue", "theme-green"];
 let currentThemeIndex = 0;
 
-// Load saved theme if exists
-const savedTheme = localStorage.getItem("theme");
+// Load saved theme on startup
+const savedTheme = localStorage.getItem("selectedTheme");
 if (savedTheme && themes.includes(savedTheme)) {
   document.body.classList.add(savedTheme);
   currentThemeIndex = themes.indexOf(savedTheme);
@@ -480,13 +496,17 @@ if (savedTheme && themes.includes(savedTheme)) {
 function switchTheme() {
   // Remove current theme
   document.body.classList.remove(themes[currentThemeIndex]);
-  // Cycle to next
+  
+  // Move to next theme
   currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-  // Add next theme
+  
+  // Apply new theme
   document.body.classList.add(themes[currentThemeIndex]);
+  
   // Save preference
-  localStorage.setItem("theme", themes[currentThemeIndex]);
+  localStorage.setItem("selectedTheme", themes[currentThemeIndex]);
 }
+
 
 /* --- Keyboard shortcuts --- */
 document.addEventListener("keydown", e=>{
