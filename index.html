@@ -432,6 +432,7 @@ window.onload = function(){
   loadStructures();
   loadTournament();
   updateDisplay();
+  (async()=>{let l=await navigator.wakeLock?.request('screen');document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible')l=await navigator.wakeLock?.request('screen');});})();
 };
 </script>
 </body>
