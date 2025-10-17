@@ -193,6 +193,12 @@ body.theme-green {
 </div>
 
 <div id="levelsOverview"></div>
+  <audio id="beep" preload="auto">
+  <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYgAAAAA//////8AAP///wAAAP///wAAAP///wAAAP///wAAAP///wAAAP///wAA" type="audio/wav">
+</audio>
+<audio id="endBeep" preload="auto">
+  <source src="data:audio/wav;base64,UklGRhoAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YZAAAAAA////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A" type="audio/wav">
+</audio>
 
 <script>
 /* --- Configuration --- */
@@ -402,12 +408,28 @@ function formatBlinds(structure,game){
 
 /* --- Tick --- */
 function tick(){
-  if(!tournament.paused && tournament.timeLeft>0){
+  if (!tournament.paused) {
+  if (tournament.timeLeft > 0) {
     tournament.timeLeft--;
-    if(tournament.timeLeft<=0) nextLevel();
+
+    // Play beeps for final 5 seconds
+    if (tournament.timeLeft <= 5 && tournament.timeLeft > 0) {
+      if (tournament.timeLeft !== lastSecondPlayed) {
+        playBeep();
+        lastSecondPlayed = tournament.timeLeft;
+      }
+    }
+
+    // When clock hits zero
+    if (tournament.timeLeft === 0) {
+      playEndBeep();
+      nextLevel();
+    }
+
     saveTournament();
     updateDisplay();
   }
+}
 }
 setInterval(tick,1000);
 
@@ -505,6 +527,21 @@ function switchTheme() {
   
   // Save preference
   localStorage.setItem("selectedTheme", themes[currentThemeIndex]);
+}
+
+  /* --- Audio --- */
+const beepSound = document.getElementById("beep");
+const endBeepSound = document.getElementById("endBeep");
+let lastSecondPlayed = null;
+
+function playBeep() {
+  beepSound.currentTime = 0;
+  beepSound.play();
+}
+
+function playEndBeep() {
+  endBeepSound.currentTime = 0;
+  endBeepSound.play();
 }
 
 
